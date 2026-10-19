@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Jejak Nenek Moyang di Tanah Jambi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #eab308;
+            border-radius: 4px;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 30px rgba(234, 179, 8, 0.6); }
+        }
+        .pulse-active {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen custom-scrollbar">
+
+    <!-- Header / Top Bar -->
+    <header class="w-full glass-card sticky top-0 z-50 px-4 py-3 border-b border-slate-700/50">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-400 font-bold text-xl">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold title-font text-amber-400 leading-tight">Jejak Nenek Moyang</h1>
+                    <p class="text-xs text-slate-400">Sejarah Indonesia & Kearifan Lokal Jambi (Fase E Kelas X)</p>
+                </div>
+            </div>
+
+            <!-- Player Status & Score -->
+            <div class="flex items-center gap-4 bg-slate-900/80 px-4 py-1.5 rounded-full border border-slate-700 text-sm">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-ninja text-amber-400"></i>
+                    <span id="player-name-display" class="font-semibold text-slate-200">Petualang</span>
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-amber-400 font-bold">
+                    <i class="fa-solid fa-star"></i>
+                    <span id="player-score">0</span> XP
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- VIEW 1: WELCOME SCREEN -->
+        <section id="view-welcome" class="glass-card rounded-2xl p-6 md:p-10 text-center max-w-2xl mx-auto shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl"></div>
+
+            <div class="w-20 h-20 bg-amber-500/20 border-2 border-amber-400 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-400 text-3xl">
+                <i class="fa-solid fa-map-location-dot"></i>
+            </div>
+
+            <h2 class="text-2xl md:text-4xl font-extrabold title-font text-white mb-3">Ekspedisi Nenek Moyang</h2>
+            <p class="text-slate-300 text-sm md:text-base mb-6 leading-relaxed">
+                Jelajahi asal usul gelombang migrasi nenek moyang bangsa Indonesia, teori-teori sejarah utama, serta peninggalan prasejarah unik di <span class="text-amber-400 font-semibold">Provinsi Jambi</span>!
+            </p>
+
+            <div class="space-y-4 mb-8 text-left bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <label for="player-name-input" class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Nama Petualang (Siswa):</label>
+                <input type="text" id="player-name-input" placeholder="Masukkan nama kamu..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-400 transition">
+            </div>
+
+            <button onclick="startGame()" class="w-full py-3.5 px-6 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-slate-950 font-extrabold rounded-xl shadow-lg hover:shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 text-lg">
+                <i class="fa-solid fa-play"></i> Mulai Petualangan
+            </button>
+        </section>
+
+        <!-- VIEW 2: MAP / MENU LEVEL -->
+        <section id="view-map" class="hidden space-y-6">
+            <div class="text-center max-w-xl mx-auto mb-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-white title-font">Peta Peta Ekspedisi</h2>
+                <p class="text-slate-400 text-sm">Selesaikan modul materi pembelajaran untuk membuka Evaluasi Uji Kompetensi Jambi!</p>
+            </div>
+
+            <!-- Grid Modules -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="glass-card rounded-2xl p-6 border border-slate-700/80 hover:border-amber-400/50 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-500/30 font-semibold">Modul 1</span>
+                            <i class="fa-solid fa-ship text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Teori Asal Usul & Migrasi</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            Mempelajari Teori Out of Taiwan, Out of Africa, Suku Melanesoid, Proto Melayu, dan Deutero Melayu.
+                        </p>
+                    </div>
+                    <button onclick="openMateri(1)" class="w-full py-2.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-600 hover:border-amber-400 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> Pelajari Modul 1
+                    </button>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card rounded-2xl p-6 border border-slate-700/80 hover:border-amber-400/50 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-emerald-500/20 text-emerald-300 text-xs px-3 py-1 rounded-full border border-emerald-500/30 font-semibold">Modul 2</span>
+                            <i class="fa-solid fa-mountain-sun text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Jejak Purba Lokal Jambi</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            Jelajah Artefak Kerinci (Obsidian), Danau Kerinci, Situs Koto Kandis, Muaro Jambi, & Karakteristik Suku Anak Dalam (Orang Rimba).
+                        </p>
+                    </div>
+                    <button onclick="openMateri(2)" class="w-full py-2.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-600 hover:border-amber-400 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-scroll"></i> Pelajari Modul 2
+                    </button>
+                </div>
+
+                <!-- Card 3 (Quiz) -->
+                <div id="quiz-card-wrapper" class="glass-card rounded-2xl p-6 border border-slate-700/80 flex flex-col justify-between relative overflow-hidden">
+                    <div id="quiz-lock-overlay" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-4">
+                        <i class="fa-solid fa-lock text-3xl text-amber-400/70 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-300">Selesaikan Modul 1 & Modul 2 untuk membuka Tantangan Ujian Evaluasi!</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-500/30 font-semibold">Ujian Akhir</span>
+                            <i class="fa-solid fa-trophy text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Evaluasi 10 Soal Sejarah</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            Uji pemahaman kamu tentang materi asal-usul nenek moyang nasional & sejarah prasejarah-klasik lokal Jambi.
+                        </p>
+                    </div>
+                    <button id="btn-start-quiz" onclick="startQuiz()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-gamepad"></i> Mulai Evaluasi (10 Soal)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: MATERI MODUL 1 -->
+        <section id="view-materi-1" class="hidden glass-card rounded-2xl p-6 md:p-8 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <div>
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Modul Pembelajaran 1</span>
+                    <h2 class="text-2xl font-bold text-white">Teori Asal Usul Nenek Moyang Indonesia</h2>
+                </div>
+                <button onclick="showMap()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg text-slate-300 font-semibold border border-slate-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Peta
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300 leading-relaxed">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-globe"></i> 1. Teori Out of Taiwan
+                    </h3>
+                    <p>
+                        Teori paling didukung oleh bukti kebahasaan (Linguistik Austronesia) dan genetika. Menyebutkan bahwa nenek moyang bangsa Indonesia berasal dari Taiwan sekitar 4.000–3.000 SM, bermigrasi menyebar melalui Filipina menuju Nusantara.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-route"></i> 2. Teori Out of Yunnan & Yunnan Migration
+                    </h3>
+                    <p>
+                        Teori tradisional oleh R.H. Geldern dan J.H.C. Kern, menyebutkan asal dari Yunnan (Cina Selatan) melalui jalur sungai besar Asia Tenggara dalam dua gelombang utama:
+                    </p>
+                    <ul class="list-disc pl-5 space-y-1 text-xs">
+                        <li><strong class="text-slate-100">Proto Melayu (Melayu Tua - ±1500 SM):</strong> Membawa kebudayaan Neolitikum (Kapak Persegi/Beliung Persegi). Menjadi cikal bakal Suku Toraja, Dayak, Batak, Nias.</li>
+                        <li><strong class="text-slate-100">Deutero Melayu (Melayu Muda - ±500 SM):</strong> Membawa kebudayaan Logam/Perunggu (Dong Son) seperti Nekara dan Kapak Corong. Menjadi cikal bakal Suku Melayu, Jawa, Bugis, Minang.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3 md:col-span-2">
+                    <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-users-line"></i> 3. Ras Melanesoid & Negrito
+                    </h3>
+                    <p>
+                        Sebelum kedatangan penutur Austronesia, wilayah Nusantara telah dihuni oleh ras Melanesoid (Proto-Melanesoid) sejak akhir Zaman Es (Pleistosen/Holosen). Peninggalan kebudayaannya antara lain Kjökkenmödding (sampuj dapur kerang) dan Abris Sous Roche (gua tempat tinggal).
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button onclick="finishModule(1)" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center gap-2">
+                    Selesai Membaca Modul 1 <i class="fa-solid fa-check-circle"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 4: MATERI MODUL 2 (LOKAL JAMBI) -->
+        <section id="view-materi-2" class="hidden glass-card rounded-2xl p-6 md:p-8 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <div>
+                    <span class="text-emerald-400 text-xs font-bold uppercase tracking-wider">Modul Pembelajaran 2</span>
+                    <h2 class="text-2xl font-bold text-white">Jejak Nenek Moyang di Tanah Jambi</h2>
+                </div>
+                <button onclick="showMap()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg text-slate-300 font-semibold border border-slate-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Peta
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300 leading-relaxed">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <h3 class="text-base font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-gem"></i> 1. Artefak Batu Obsidian & Kerinci
+                    </h3>
+                    <p>
+                        Di kawasan Dataran Tinggi Kerinci (sekitar Danau Kerinci), para arkeolog menemukan alat-alat batu dari kaca gunung api (<span class="text-amber-300 font-semibold">Obsidian</span>) dan mikrolit prasejarah. Ini membuktikan permukiman kuno yang telah memanfaatkan teknologi serpih-bilah berkualitas tinggi pada masa berburu dan mengumpulkan makanan tingkat lanjut hingga bercocok tanam.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <h3 class="text-base font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-tree"></i> 2. Suku Anak Dalam (Orang Rimba)
+                    </h3>
+                    <p>
+                        Suku Anak Dalam (SAD) atau Orang Rimba yang mendiami hutan kawasan Taman Nasional Bukit Duabelas (TNBD) Jambi merupakan kelompok masyarakat adat dengan akar budaya Austronesia/Proto-Melayu yang mempertahankan tradisi Melayu Tua dan kehidupan berburu-meramu (<em>Melangun</em>) secara harmonis bersama alam.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <h3 class="text-base font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-vihara"></i> 3. Situs Koto Kandis & Muaro Jambi
+                    </h3>
+                    <p>
+                        Jalur Sungai Batanghari adalah urat nadi permukiman kuno. Di Muaro Jambi dan Situs Koto Kandis (Muaro Sabak, Tanjung Jabung Timur) ditemukan struktur percandian, arca perunggu, dan keramik kuno. Peninggalan ini mencerminkan perkembangan gelombang Deutero Melayu yang telah berinteraksi dengan peradaban India/Sino-Tibet melalui perdagangan maritim.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <h3 class="text-base font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-archway"></i> 4. Megalitikum Kerinci (Batu Silindrik)
+                    </h3>
+                    <p>
+                        Di wilayah Kerinci seperti Desa Pondok Tinggi dan Lempur, banyak ditemukan struktur peninggalan tradisi <span class="text-amber-300 font-semibold">Megalitikum</span> berupa batu silindrik bertatahkan ukiran sulur-suluran dan manusia. Peninggalan megalit ini berhubungan erat dengan kepercayaan animisme & pemujaan roh nenek moyang (leluhur).
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button onclick="finishModule(2)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center gap-2">
+                    Selesai Membaca Modul 2 <i class="fa-solid fa-check-circle"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 5: EVALUATION QUIZ (10 QUESTIONS) -->
+        <section id="view-quiz" class="hidden max-w-3xl mx-auto w-full">
+            <div class="glass-card rounded-2xl p-6 md:p-8 relative">
+                <!-- Quiz Header Progress -->
+                <div class="flex justify-between items-center mb-6 border-b border-slate-700/80 pb-4">
+                    <div>
+                        <span id="quiz-question-number" class="text-xs font-bold text-amber-400 uppercase tracking-widest">Soal 1 dari 10</span>
+                        <h2 class="text-lg md:text-xl font-bold text-white">Evaluasi Sejarah Nenek Moyang</h2>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block">Skor Saat Ini</span>
+                        <span id="quiz-score-badge" class="text-amber-400 font-extrabold text-lg">0</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-800 h-2 rounded-full mb-6 overflow-hidden">
+                    <div id="quiz-progress-bar" class="bg-amber-400 h-full w-0 transition-all duration-300"></div>
+                </div>
+
+                <!-- Question Text -->
+                <div class="mb-6 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                    <p id="question-text" class="text-sm md:text-base text-slate-100 font-semibold leading-relaxed">
+                        Loading soal...
+                    </p>
+                </div>
+
+                <!-- Options Grid -->
+                <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <!-- Explanation Box -->
+                <div id="explanation-box" class="hidden p-4 rounded-xl mb-6 text-xs md:text-sm leading-relaxed border">
+                    <!-- Dynamic Explanation -->
+                </div>
+
+                <!-- Action Button -->
+                <div class="flex justify-end">
+                    <button id="btn-next-question" onclick="nextQuestion()" class="hidden px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center gap-2">
+                        Soal Selanjutnya <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 6: QUIZ RESULT -->
+        <section id="view-result" class="hidden glass-card rounded-2xl p-8 text-center max-w-xl mx-auto shadow-2xl space-y-6">
+            <div id="result-icon-container" class="w-24 h-24 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center mx-auto text-4xl text-amber-400">
+                <i class="fa-solid fa-award"></i>
+            </div>
+
+            <div>
+                <h2 id="result-title" class="text-2xl md:text-3xl font-extrabold text-white title-font">Hasil Evaluasi</h2>
+                <p id="result-subtitle" class="text-slate-300 text-sm mt-1">Selamat! Kamu telah menyelesaikan uji kompetensi.</p>
+            </div>
+
+            <!-- Score Summary Card -->
+            <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700/80 grid grid-cols-3 gap-2">
+                <div>
+                    <span class="text-xs text-slate-400 block">Benar</span>
+                    <span id="res-correct" class="text-2xl font-bold text-emerald-400">0</span>
+                </div>
+                <div class="border-x border-slate-700">
+                    <span class="text-xs text-slate-400 block">Salah</span>
+                    <span id="res-wrong" class="text-2xl font-bold text-rose-400">0</span>
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block">Nilai</span>
+                    <span id="res-score" class="text-2xl font-bold text-amber-400">0</span>
+                </div>
+            </div>
+
+            <!-- Feedback Message -->
+            <p id="result-feedback" class="text-xs md:text-sm text-slate-300 italic px-4">
+                 feedback...
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="resetQuiz()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-sm border border-slate-600 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+                </button>
+                <button onclick="showMap()" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-map"></i> Kembali ke Menu
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800/80 glass-card mt-auto">
+        <p>© 2026 Game Interaktif Sejarah Indonesia Kelas X Fase E • Materi Lokal Provinsi Jambi</p>
+    </footer>
+
+    <script>
+        // Game State Variables
+        let playerName = "Petualang";
+        let playerScore = 0;
+        let completedModules = {
+            1: false,
+            2: false
+        };
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let userAnswers = [];
+        let isOptionSelected = false;
+
+        // 10 Evaluation Questions (Materi Asal Usul Nenek Moyang + Lokal Jambi)
+        const questionsData = [
+            {
+                question: "1. Berdasarkan teori linguistik dan genetika modern, teori yang menjelaskan bahwa nenek moyang penutur bahasa Austronesia bermigrasi dari kawasan Taiwan menuju kepulauan Nusantara adalah...",
+                options: [
+                    "Teori Out of Yunnan",
+                    "Teori Out of Taiwan",
+                    "Teori Nusantara",
+                    "Teori Out of Africa"
+                ],
+                correct: 1,
+                explanation: "Teori Out of Taiwan didukung oleh bukti kebahasaan (Austronesia) dan bukti genetika DNA bahwa migrasi manusia penutur Austronesia berasal dari Taiwan bergerak ke selatan."
+            },
+            {
+                question: "2. Bangsa Proto Melayu (Melayu Tua) yang memasuki wilayah Nusantara sekitar tahun 1500 SM membawa kebudayaan khas masa Neolitikum, yaitu...",
+                options: [
+                    "Kapak Corong dan Nekara Perunggu",
+                    "Kapak Persegi (Beliung Persegi) dan Kapak Lonjong",
+                    "Prasasti Batu dan Arca Logam",
+                    "Candi Bata Merah"
+                ],
+                correct: 1,
+                explanation: "Proto Melayu membawa kebudayaan Neolitikum seperti Beliung/Kapak Persegi dan Kapak Lonjong sebelum berkembangnya teknologi perunggu."
+            },
+            {
+                question: "3. Gelombang migrasi Deutero Melayu (Melayu Muda) sekitar tahun 500 SM ditandai dengan kemampuannya membawa kebudayaan logam yang dipengaruhi oleh tradisi...",
+                options: [
+                    "Kebudayaan Bacson-Hoabinh",
+                    "Kebudayaan Dong Son (Vietnam Utara)",
+                    "Kebudayaan Sa Huynh",
+                    "Kebudayaan Harappa"
+                ],
+                correct: 1,
+                explanation: "Deutero Melayu dicirikan oleh masuknya kebudayaan Logam/Perunggu yang berpusat dan terpengaruh dari tradisi Dong Son di Vietnam."
+            },
+            {
+                question: "4. Di daerah Kerinci (Jambi), peninggalan prasejarah yang terbuat dari bahan kaca vulkanik hitam dan digunakan sebagai alat batu/serpih oleh manusia purba adalah...",
+                options: [
+                    "Batu Menhir",
+                    "Batu Obsidian",
+                    "Batu Slate",
+                    "Batu Kapur"
+                ],
+                correct: 1,
+                explanation: "Artefak batu obsidian banyak ditemukan di wilayah Dataran Tinggi Kerinci (sekitar Danau Kerinci) sebagai bukti teknologi alat batu khas prasejarah Jambi."
+            },
+            {
+                question: "5. Kelompok masyarakat adat di Provinsi Jambi yang mendiami kawasan hutan TNBD dan diperkirakan memiliki keterkaitan dengan leluhur Proto-Melayu yang menjaga tradisi berburu-meramu adalah...",
+                options: [
+                    "Suku Baduy",
+                    "Suku Anak Dalam (Orang Rimba)",
+                    "Suku Dayak Tomun",
+                    "Suku Tengger"
+                ],
+                correct: 1,
+                explanation: "Suku Anak Dalam (SAD) atau Orang Rimba adalah masyarakat adat pedalaman hutan Jambi yang mewarisi pola kebudayaan Melayu Tua."
+            },
+            {
+                question: "6. Manusia purba penghuni Nusantara pada masa Pleistosen akhir yang meninggalkan sampah dapur berupa tumpukan kulit kerang (Kjökkenmödding) tergolong ke dalam ras...",
+                options: [
+                    "Mongoloid",
+                    "Melanesoid / Proto-Melanesoid",
+                    "Caucasoid",
+                    "Kaukasia Muda"
+                ],
+                correct: 1,
+                explanation: "Ras Melanesoid merupakan kelompok ras awal yang mendiami Nusantara dan meninggalkan peninggalan seperti Kjökkenmödding & Abris Sous Roche."
+            },
+            {
+                question: "7. Situs peninggalan sejarah di tepi Sungai Batanghari Jambi yang menunjukkan jejak perkembangan peradaban dan percandian kuno gelombang Melayu-Klasik adalah...",
+                options: [
+                    "Situs Muaro Jambi & Situs Koto Kandis",
+                    "Situs Sangiran",
+                    "Situs Gunung Padang",
+                    "Situs Trowulan"
+                ],
+                correct: 0,
+                explanation: "Kawasan Percandian Muaro Jambi dan Situs Koto Kandis di Tanjung Jabung Timur merupakan kompleks peninggalan permukiman dan peradaban kuno penting di Jambi."
+            },
+            {
+                question: "8. Salah satu tradisi Megalitikum yang dapat kita temukan di Dataran Tinggi Kerinci (Jambi) dalam bentuk batu besar berukir sulur-suluran yang berfungsi sebagai sarana pemujaan roh leluhur adalah...",
+                options: [
+                    "Batu Silindrik / Megalit Kerinci",
+                    "Nekara Tunon",
+                    "Sarkofagus Bali",
+                    "Candi Borobudur"
+                ],
+                correct: 0,
+                explanation: "Peninggalan tradisi Megalitikum di Kerinci ditandai dengan keberadaan Batu Silindrik berukir yang digunakan dalam penghormatan leluhur."
+            },
+            {
+                question: "9. Suku bangsa modern di Indonesia berikut ini yang merupakan keturunan langsung dari gelombang migrasi Proto Melayu adalah...",
+                options: [
+                    "Suku Jawa, Suku Sunda, dan Suku Bali",
+                    "Suku Toraja, Suku Dayak, dan Suku Batak",
+                    "Suku Bugis dan Suku Minangkabau",
+                    "Suku Arab dan Suku Tionghoa"
+                ],
+                correct: 1,
+                explanation: "Suku Toraja, Dayak, Batak, dan Nias tergolong suku bangsa keturunan Proto Melayu (Melayu Tua)."
+            },
+            {
+                question: "10. Mengapa keberadaan Sungai Batanghari sangat krusial dalam pemukiman nenek moyang bangsa Indonesia di kawasan Jambi sejak zaman prasejarah hingga klasik?",
+                options: [
+                    "Karena menjadi benteng pertahanan alami dari letusan gunung",
+                    "Sebagai jalur utama transportasi, sumber kehidupan, dan perdagangan inter-insuler",
+                    "Hanya digunakan sebagai tempat ritual pemakaman",
+                    "Karena tidak pernah tergenang banjir"
+                ],
+                correct: 1,
+                explanation: "Sungai Batanghari adalah urat nadi kehidupan yang memfasilitasi pergerakan migrasi, sumber pangan, dan jalur perdagangan penting nenek moyang di Jambi."
+            }
+        ];
+
+        // Functions for Navigation & Game Engine
+        function startGame() {
+            const inputName = document.getElementById("player-name-input").value.trim();
+            if (inputName !== "") {
+                playerName = inputName;
+            }
+            document.getElementById("player-name-display").textContent = playerName;
+            
+            showMap();
+        }
+
+        function showMap() {
+            hideAllViews();
+            document.getElementById("view-map").classList.remove("hidden");
+            checkQuizUnlock();
+        }
+
+        function hideAllViews() {
+            const views = ["view-welcome", "view-map", "view-materi-1", "view-materi-2", "view-quiz", "view-result"];
+            views.forEach(id => {
+                document.getElementById(id).classList.add("hidden");
+            });
+        }
+
+        function openMateri(id) {
+            hideAllViews();
+            if (id === 1) {
+                document.getElementById("view-materi-1").classList.remove("hidden");
+            } else if (id === 2) {
+                document.getElementById("view-materi-2").classList.remove("hidden");
+            }
+        }
+
+        function finishModule(id) {
+            completedModules[id] = true;
+            playerScore += 50;
+            document.getElementById("player-score").textContent = playerScore;
+
+            // Trigger Confetti
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+
+            showMap();
+        }
+
+        function checkQuizUnlock() {
+            const overlay = document.getElementById("quiz-lock-overlay");
+            const btn = document.getElementById("btn-start-quiz");
+
+            if (completedModules[1] && completedModules[2]) {
+                overlay.classList.add("hidden");
+                btn.classList.add("pulse-active");
+            } else {
+                overlay.classList.remove("hidden");
+                btn.classList.remove("pulse-active");
+            }
+        }
+
+        // Quiz Logic
+        function startQuiz() {
+            hideAllViews();
+            document.getElementById("view-quiz").classList.remove("hidden");
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            userAnswers = [];
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isOptionSelected = false;
+            const currentQ = questionsData[currentQuestionIndex];
+
+            // UI Elements
+            document.getElementById("quiz-question-number").textContent = `Soal ${currentQuestionIndex + 1} dari ${questionsData.length}`;
+            document.getElementById("question-text").textContent = currentQ.question;
+            document.getElementById("quiz-score-badge").textContent = quizScore;
+
+            // Update Progress Bar
+            const progressPercent = ((currentQuestionIndex) / questionsData.length) * 100;
+            document.getElementById("quiz-progress-bar").style.width = `${progressPercent}%`;
+
+            // Reset Explanation Box & Button
+            const expBox = document.getElementById("explanation-box");
+            expBox.classList.add("hidden");
+            expBox.className = "hidden p-4 rounded-xl mb-6 text-xs md:text-sm leading-relaxed border";
+            document.getElementById("btn-next-question").classList.add("hidden");
+
+            // Render Options
+            const container = document.getElementById("options-container");
+            container.innerHTML = "";
+
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-slate-200 text-xs md:text-sm transition flex items-center gap-3";
+                btn.onclick = () => selectOption(index);
+                
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center font-bold text-xs text-amber-400 shrink-0">
+                        ${String.fromCharCode(65 + index)}
+                    </span>
+                    <span>${option}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex) {
+            if (isOptionSelected) return;
+            isOptionSelected = true;
+
+            const currentQ = questionsData[currentQuestionIndex];
+            const optionsBtns = document.getElementById("options-container").children;
+            const expBox = document.getElementById("explanation-box");
+
+            userAnswers.push(selectedIndex);
+
+            if (selectedIndex === currentQ.correct) {
+                quizScore += 10;
+                playerScore += 10;
+                document.getElementById("player-score").textContent = playerScore;
+                
+                // Style correct option
+                optionsBtns[selectedIndex].classList.remove("bg-slate-900/50", "border-slate-700");
+                optionsBtns[selectedIndex].classList.add("bg-emerald-500/20", "border-emerald-500", "text-emerald-300");
+
+                // Style Explanation
+                expBox.classList.remove("hidden");
+                expBox.classList.add("bg-emerald-950/40", "border-emerald-500/50", "text-emerald-200");
+                expBox.innerHTML = `<strong class="text-emerald-400 font-bold block mb-1"><i class="fa-solid fa-circle-check"></i> Jawaban Tepat!</strong>${currentQ.explanation}`;
+            } else {
+                // Style wrong option
+                optionsBtns[selectedIndex].classList.remove("bg-slate-900/50", "border-slate-700");
+                optionsBtns[selectedIndex].classList.add("bg-rose-500/20", "border-rose-500", "text-rose-300");
+
+                // Highlight correct answer
+                optionsBtns[currentQ.correct].classList.remove("bg-slate-900/50", "border-slate-700");
+                optionsBtns[currentQ.correct].classList.add("bg-emerald-500/20", "border-emerald-500", "text-emerald-300");
+
+                // Style Explanation
+                expBox.classList.remove("hidden");
+                expBox.classList.add("bg-rose-950/40", "border-rose-500/50", "text-rose-200");
+                expBox.innerHTML = `<strong class="text-rose-400 font-bold block mb-1"><i class="fa-solid fa-circle-xmark"></i> Kurang Tepat!</strong>${currentQ.explanation}`;
+            }
+
+            document.getElementById("quiz-score-badge").textContent = quizScore;
+            document.getElementById("btn-next-question").classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            hideAllViews();
+            document.getElementById("view-result").classList.remove("hidden");
+
+            const correctCount = quizScore / 10;
+            const wrongCount = questionsData.length - correctCount;
+
+            document.getElementById("res-correct").textContent = correctCount;
+            document.getElementById("res-wrong").textContent = wrongCount;
+            document.getElementById("res-score").textContent = quizScore;
+
+            const feedback = document.getElementById("result-feedback");
+            const title = document.getElementById("result-title");
+
+            if (quizScore >= 80) {
+                title.textContent = "Luar Biasa, Sejarawan Muda!";
+                feedback.textContent = `Hebat sekali ${playerName}! Kamu sangat memahami asal-usul nenek moyang bangsa Indonesia serta kebudayaan prasejarah lokal Jambi dengan sangat sempurna!`;
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else if (quizScore >= 60) {
+                title.textContent = "Hasil Yang Bagus!";
+                feedback.textContent = `Bagus ${playerName}! Pemahamanmu sudah baik, coba baca kembali modul lokal Jambi untuk menyempurnakan nilaimu.`;
+            } else {
+                title.textContent = "Tetap Semangat!";
+                feedback.textContent = `Jangan berkecil hati ${playerName}! Pelajari kembali Modul 1 dan Modul 2 lalu coba lagi ujiannya.`;
+            }
+        }
+
+        function resetQuiz() {
+            startQuiz();
+        }
+
+        // Ensure initialization on load
+        window.onload = function() {
+            console.log("Game Sejarah Nenek Moyang Loaded Successfully.");
+        };
+    </script>
+</body>
+</html>
